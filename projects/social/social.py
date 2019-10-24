@@ -1,4 +1,19 @@
+import random
+import math
+import time
 
+class Queue():
+    def __init__(self):
+        self.queue = []
+    def enqueue(self, value):
+        self.queue.append(value)
+    def dequeue(self):
+        if  self.size() > 0:
+            return self.queue.pop(0)
+        else:
+            return None
+    def size(self):
+        return len(self.queue)
 
 class User:
     def __init__(self, name):
@@ -47,8 +62,22 @@ class SocialGraph:
         # !!!! IMPLEMENT ME
 
         # Add users
+        for i in range(numUsers):
+            self.addUser(f"User {i + 1}")
 
         # Create friendships
+        possibleFriendships = []
+        for userID in self.users:
+            for friendID in range(userID + 1, self.lastID + 1):
+                possibleFriendships.append((userID, friendID))
+
+        random.shuffle(possibleFriendships)
+
+        debug_addFriendshipCounter = 0
+        for i in range(0, math.floor((numUsers * avgFriendships) // 2)):
+            friendship = possibleFriendships[i]
+            self.addFriendship(friendship[0], friendship[1])
+            debug_addFriendshipCounter += 1
 
     def getAllSocialPaths(self, userID):
         """
@@ -61,6 +90,28 @@ class SocialGraph:
         """
         visited = {}  # Note that this is a dictionary, not a set
         # !!!! IMPLEMENT ME
+
+        q = Queue()
+        q.enqueue( [ userID])
+
+        while q.size() > 0:
+            path = q.dequeue()
+            friend = path[-1]
+
+            if friend not in visited:
+                visited[friend] = path
+
+                for second_friend in self.friendships[friend]:
+                    if second_friend not in visited:
+                        path_copy = list(path)
+                        path_copy.append(second_friend)
+                        q.enqueue(path_copy)
+        debug_friendship = 0
+
+        for key in visited:
+            debug_friendship += len(visited[key])
+
+
         return visited
 
 

@@ -45,3 +45,115 @@ visited = set(A, B, D)
 current_node = D
 
 neighbords[F, G]
+
+    def dft_recursive(self, starting_vertex):
+        """
+        Print each vertex in depth-first order
+        beginning from starting_vertex.
+        This should be done using recursion.
+        """
+        if not self.vertices:
+            raise VertexNotFound("Sorry, the vertex doesn't exist")
+        result = []
+        visited = set()
+        def dft(vertex, visited, result):
+            if vertex not in visited:
+                visited.add(vertex)
+                result.append(str(vertex))
+                neighbors = self.getNeighbors(vertex)
+                if neighbors and len(neighbors) > 0:
+                    for neighbor in neighbors:
+                        dft(neighbor, visited, result)
+
+        dft(starting_vertex, visited, result)
+        print("Recursive DFT: " + " ".join(result))
+        return result
+
+    def bfs(self, starting_vertex, destination_vertex):
+        """
+        Return a list containing the shortest path from
+        starting_vertex to destination_vertex in
+        breath-first order.
+        """
+        visited = {}
+        queue = Queue()
+        visited[starting_vertex] = [starting_vertex]
+        queue.enqueue(starting_vertex)
+        while queue.size():
+            current_vertex=queue.dequeue()
+            neighbors = self.getNeighbors(current_vertex)
+            for neighbor in neighbors:
+                if neighbor not in visited:
+                    visited[neighbor] = visited[current_vertex][:]
+                    visited[neighbor].append(neighbor)
+                    if destination_vertex is not None and neighbor == destination_vertex:
+                        return visited[neighbor]
+                    queue.enqueue(neighbor)
+        return visited
+
+
+
+How to solve any graph problems
+1) Describe the problem in graph terminalogy
+
+Nodes: words
+Edges: one letter differences
+
+2) Build a graph or define our getNeighbors function
+
+build a graph option:
+
+Iteerate over all the words and add_vertex
+for every node:
+    for every other node:
+        check if they are one letter different
+        if so, make an edge
+
+open("words.txt", "r")
+
+words = file.read().split('\n')
+file.close()
+
+word_set = set()
+for word in words:
+    word_set.add(word.lower())
+
+alphabet = list(string.ascii_lowercase)
+
+def get Neightbors(word):
+    neighbors = []
+    # for each letter in the word:
+    for letter_index in range(len(word)):
+        # for each letter in the alphabet
+        for alphabet_letter in alphabet:
+            # turn the word into a list
+            word_list = list(word)
+            #sub the alphabet-letter for the word letter
+            word_list[letter_index] = alphabet_letter
+            #turn the word list back into a string
+            maybe_neighbor = "".join(word_list)
+            #CHECK IF THIS NEW WORD IS IN OUR WORD-LIST
+            if maybe_neighbor in word_set and maybe_neighbor is not word:
+                #if so add to our list of neighbors
+                neighbors.append(maybe_neighbor)
+
+    return neighbors
+
+def bfs(start_word, target_word):
+    q = Queue()
+    visited = set()
+    path = [start_word]
+    q.enqueue(path)
+
+    while q.size() > 0:
+        current_path = q.dequeue()
+        current_node = current_path[-1]
+        if current_node == target_word:
+            return current_path
+        if current_node not in visited:
+            visited.add(current_node)
+            neighbor_words = getNeighbors(current_node)
+            for neighbor_word in neighbor_words:
+                path_copy = list(current_path)
+                path_copy.append(neighbor_word)
+                q.enqueue(path_copy)

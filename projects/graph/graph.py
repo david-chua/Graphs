@@ -77,28 +77,17 @@ class Graph:
                 for neighbor in neighbors:
                     stack.push(neighbor)
 
-    def dft_recursive(self, starting_vertex):
+    def dft_recursive(self, starting_vertex, visited=set()):
         """
         Print each vertex in depth-first order
         beginning from starting_vertex.
         This should be done using recursion.
         """
-        if not self.vertices:
-            raise VertexNotFound("Sorry, the vertex doesn't exist")
-        result = []
-        visited = set()
-        def dft(vertex, visited, result):
-            if vertex not in visited:
-                visited.add(vertex)
-                result.append(str(vertex))
-                neighbors = self.getNeighbors(vertex)
-                if neighbors and len(neighbors) > 0:
-                    for neighbor in neighbors:
-                        dft(neighbor, visited, result)
-
-        dft(starting_vertex, visited, result)
-        print("Recursive DFT: " + " ".join(result))
-        return result
+        if starting_vertex not in visited:
+            visited.add(starting_vertex)
+            neighbors = self.getNeighbors(starting_vertex)
+            for neighbor in neighbors:
+                self.dft_recursive(neighbor, visited)
 
 
     def bfs(self, starting_vertex, destination_vertex):
@@ -109,19 +98,22 @@ class Graph:
         """
         visited = {}
         queue = Queue()
-        visited[starting_vertex] = [starting_vertex]
-        queue.enqueue(starting_vertex)
-        while queue.size():
-            current_vertex=queue.dequeue()
-            neighbors = self.getNeighbors(current_vertex)
-            for neighbor in neighbors:
-                if neighbor not in visited:
-                    visited[neighbor] = visited[current_vertex][:]
-                    visited[neighbor].append(neighbor)
-                    if destination_vertex is not None and neighbor == destination_vertex:
-                        return visited[neighbor]
-                    queue.enqueue(neighbor)
-        return visited
+        path = [starting_vertex]
+        q.enqueue(path)
+
+        while q.size() > 0:
+            current_path = q.dequeue()
+            current_node = current_path[-1]
+            if current_node == destination_vertex:
+                return current_path
+            if current_node not in visited:
+                visited.add(current_node)
+                neighbors = self.getNeighbors(current_node)
+                for neighbor in neighbors:
+                    # make a copy current_path[:] but a diff array
+                    path_copy = current_path[:]
+                    path_copy.append(neighbor)
+                    q.enqueue(path_copy)
 
 
     def dfs(self, starting_vertex, destination_vertex):
